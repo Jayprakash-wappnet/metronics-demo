@@ -1,17 +1,20 @@
 import {KTSVG} from '../../../../../../../_metronic/helpers'
-import {useListView} from '../../core/ListViewProvider'
-// import {UsersListFilter} from './UsersListFilter'
+import {useState} from 'react'
+import AddUserModal from './AddUserModal'
 
 const ClientListToolbar = () => {
-  const {setItemIdForUpdate} = useListView()
+  const [showAddUserModal, setShowAddUserModal] = useState(false)
+
   const openAddUserModal = () => {
-    setItemIdForUpdate(null)
+    setShowAddUserModal(true)
+  }
+
+  const closeAddUserModal = () => {
+    setShowAddUserModal(false)
   }
 
   return (
     <div className='d-flex justify-content-end' data-kt-user-table-toolbar='base'>
-      {/* <UsersListFilter /> */}
-
       {/* begin::Export */}
       <button type='button' className='btn btn-light-primary me-3'>
         <KTSVG path='/media/icons/duotune/arrows/arr078.svg' className='svg-icon-2' />
@@ -25,6 +28,8 @@ const ClientListToolbar = () => {
         Add User
       </button>
       {/* end::Add user */}
+
+      {showAddUserModal && <AddUserModal onClose={closeAddUserModal} />}
     </div>
   )
 }

@@ -4,8 +4,10 @@ import {initialQueryState, KTSVG, useDebounce} from '../../../../../../../_metro
 import {useQueryRequest} from '../../core/QueryRequestProvider'
 
 const ClientListSearchComponent = () => {
+
   const {updateState} = useQueryRequest()
   const [searchTerm, setSearchTerm] = useState<string>('')
+  console.log(searchTerm)
   // Debounce search term so that it only gives us latest value ...
   // ... if searchTerm has not been updated within last 500ms.
   // The goal is to only have the API call fire when user stops typing ...
@@ -14,6 +16,7 @@ const ClientListSearchComponent = () => {
   // Effect for API call
   useEffect(
     () => {
+      console.log(debouncedSearchTerm)
       if (debouncedSearchTerm !== undefined && searchTerm !== undefined) {
         updateState({search: debouncedSearchTerm, ...initialQueryState})
       }

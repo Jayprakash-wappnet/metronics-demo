@@ -1,61 +1,104 @@
-import {useMemo} from 'react'
-import {useTable, ColumnInstance, Row} from 'react-table'
-import {CustomHeaderColumn} from '../table/columns/CustomHeaderColumn'
-import {CustomRow} from '../table/columns/CustomRow'
-import {useQueryResponseData, useQueryResponseLoading} from '../core/QueryResponseProvider'
-import {clientColumns} from './columns/_columns'
-import { Client } from '../core/_models'
+import React, {useState, useEffect} from 'react'
+import ReactPaginate from 'react-paginate'
+import {Client} from '../core/_models'
+import {ClientService} from '../core/_requests'
 import { ClientListLoading } from '../components/loading/ClientListLoading'
-import { ClientListPagination } from '../components/pagination/ClientListPagination'
-import {KTCardBody} from '../../../../../../_metronic/helpers'
-
-const ClientTable = () => {
-  const users = useQueryResponseData()
-  const isLoading = useQueryResponseLoading()
-  const data = useMemo(() => users, [users])
-  const columns = useMemo(() => clientColumns, [])
-  const {getTableProps, getTableBodyProps, headers, rows, prepareRow} = useTable({
-    columns,
-    data,
-  })
-
-  return (
-    <KTCardBody className='py-4'>
-      <div className='table-responsive'>
-        <table
-          id='kt_table_users'
-          className='table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer'
-          {...getTableProps()}
-        >
-          <thead>
-            <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0'>
-              {headers.map((column: ColumnInstance<Client>) => (
-                <CustomHeaderColumn key={column.id} column={column} />
-              ))}
-            </tr>
-          </thead>
-          <tbody className='text-gray-600 fw-bold' {...getTableBodyProps()}>
-            {rows.length > 0 ? (
-              rows.map((row: Row<Client>, i) => {
-                prepareRow(row)
-                return <CustomRow row={row} key={`row-${i}-${row.id}`} />
-              })
-            ) : (
-              <tr>
-                <td colSpan={7}>
-                  <div className='d-flex text-center w-100 align-content-center justify-content-center'>
-                    No matching records found
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <ClientListPagination />
-      {isLoading && <ClientListLoading />}
-    </KTCardBody>
-  )
+import { ClientActionsCell } from './columns/ClientActionsCell'
+interface IState {
+  loading: boolean
+  users: Client[]
+  id: any
+  page: number;
+  totalPages: number;
 }
 
-export {ClientTable}
+export const ClientTable: React.FC = () => {
+  const [state, setState] = useState<IState>({
+    loading: false,
+    users: [] as Client[],
+    id:"",
+    page: 0,
+    totalPages: 0,
+  })
+
+
+  const pageSize = 5; // number of items per page
+
+
+  // network request
+
+  useEffect(() => {
+    setState({...state, loading: true})
+    ClientService.getAllUsers(state.page + 1, pageSize)
+      .then((res: any) =>
+        setState({
+          ...state,
+          loading: false,
+          users: res.data,
+          totalPages: Math.ceil(res.total / pageSize),
+
+        })
+      )
+      .catch(() =>
+        setState({
+          ...state,
+          loading: false,
+        })
+      )
+    //eslint-disable-next-line
+  }, [state.page])
+
+  const {loading, users, totalPages } = state;
+
+  const handlePageClick = (data: { selected: number }) => {
+    setState({ ...state, page: data.selected });
+  };
+
+  return (
+    <div className='container'>
+      <h1>CLIENT DATA FROM JSON PLACEHOLDER</h1>
+      {loading && <ClientListLoading/>}
+      <table className='table table-striped'>
+        <thead>
+          <tr>
+            <td>ID</td>
+            <td>NAME</td>
+            <td>USER NAME</td>
+            <td>EMAIL</td>
+            <td>ACTIONS</td>
+          </tr>
+        </thead>
+        <tbody>
+          {users.length > 0 ? (
+            users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.name}</td>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td> <ClientActionsCell/> </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={7}>
+                <div className='d-flex text-center w-100 align-content-center justify-content-center'>
+                  No matching records found
+                </div>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <ReactPaginate
+        pageCount={totalPages}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={5}
+        onPageChange={handlePageClick}
+        containerClassName='pagination justify-content-center'
+        activeClassName='active'
+      />
+    </div>
+    
+  )
+}

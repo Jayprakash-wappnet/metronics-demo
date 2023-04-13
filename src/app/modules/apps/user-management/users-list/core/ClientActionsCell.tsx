@@ -3,9 +3,9 @@ import {FC, useEffect} from 'react'
 import {useMutation, useQueryClient} from 'react-query'
 import {MenuComponent} from '../../../../../../_metronic/assets/ts/components'
 import {ID, KTSVG, QUERIES} from '../../../../../../_metronic/helpers'
-import {useListView} from '../core/ListViewProvider'
-import {useQueryResponse} from '../core/QueryResponseProvider'
-import {deleteUser} from '../core/_requests'
+import {useListView} from './ListViewProvider'
+import {useQueryResponse} from './QueryResponseProvider'
+import {deleteUser} from './_requests'
 
 type Props = {
   id: ID
