@@ -1,24 +1,41 @@
-import {useState} from 'react'
+import {useState, useContext} from 'react'
 import {Modal} from 'react-bootstrap'
+import ClientContext, {Client} from '../../context/ClientContext'
 
 interface AddUserModalProps {
   onClose: () => void
 }
 
+interface AddUserModalState {
+  name: string
+  username: string
+  email: string
+}
+
 const AddUserModal = ({onClose}: AddUserModalProps) => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [userName, setUserName] = useState('')
+
+  const {addUser} = useContext(ClientContext)
+  const [state, setState] = useState<AddUserModalState>({
+    name: '',
+    username: '',
+    email: '',
+  })
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log(name)
-    console.log(userName)
-    console.log(email)
+   
+    const user: Client = {
+      name: state.name,
+      username: state.username,
+      email: state.email,
+    }
+    console.log(user)
+
+    addUser(user)
     event.preventDefault()
 
     // Basic validation for input fields
-    if (!name || !email || !userName) {
+    if (!state.name || !state.email || !state.username) {
       setErrorMessage('All fields are required.')
       return
     }
@@ -26,6 +43,14 @@ const AddUserModal = ({onClose}: AddUserModalProps) => {
     // Add logic to handle submitting the form
 
     onClose()
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      [e.target.name]: e.target.value,
+      
+    })
   }
 
   return (
@@ -42,8 +67,9 @@ const AddUserModal = ({onClose}: AddUserModalProps) => {
               type='text'
               className='form-control'
               id='name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name='name'
+              onChange={handleChange}
+              value={state.name}
             />
           </div>
           <div className='form-group'>
@@ -52,8 +78,9 @@ const AddUserModal = ({onClose}: AddUserModalProps) => {
               type='text'
               className='form-control'
               id='userName'
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              name='username'
+              onChange={handleChange}
+              value={state.username}
             />
           </div>
           <div className='form-group'>
@@ -62,8 +89,9 @@ const AddUserModal = ({onClose}: AddUserModalProps) => {
               type='email'
               className='form-control'
               id='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name='email'
+              onChange={handleChange}
+              value={state.email}
             />
           </div>
         </form>
