@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 export class ClientService {
   private static URL: string = "https://jsonplaceholder.typicode.com";
 

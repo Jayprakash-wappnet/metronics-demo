@@ -1,18 +1,19 @@
 import { createContext } from "react";
 
 export interface ClientContextInterface {
-  user: Client;
+  user: Client[];
   addUser: (user: Client) => void;
 }
 
 export interface Client {
+  id: string;
   name: string;
   username: string;
   email: string;
 }
 
 const ClientContext = createContext<ClientContextInterface>({
-  user: { name: "", username: "", email: "" },
+  user: [{ id: "", name: "", username: "", email: "" }],
   addUser: (user: Client) => {},
 });
 
