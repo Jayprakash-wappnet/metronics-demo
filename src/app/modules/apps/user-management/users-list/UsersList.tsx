@@ -13,7 +13,7 @@ const UsersList = () => {
       <KTCard>
         <UsersListHeader />
         <UsersTable />
-      </KTCard>
+      </KTCard>  
       {itemIdForUpdate !== undefined && <UserEditModal />}
     </>
   )

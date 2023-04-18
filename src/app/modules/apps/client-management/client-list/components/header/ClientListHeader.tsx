@@ -1,7 +1,6 @@
 import { ClientListToolbar } from "./ClientListToolbar";
 import { useListView } from "../../core/ListViewProvider";
 
-import { ClientListSearchComponent } from "./ClientListSearchComponent";
 import { ClientListGrouping } from "./ClientListGrouping";
 
 const ClientListHeader = () => {
@@ -9,7 +8,6 @@ const ClientListHeader = () => {
 
   return (
     <div className="card-header border-0 pt-6">
-      <ClientListSearchComponent />
       {/* begin::Card toolbar */}
       <div className="card-toolbar">
         {/* begin::Group actions */}

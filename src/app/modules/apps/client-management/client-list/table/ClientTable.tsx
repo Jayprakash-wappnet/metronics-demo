@@ -11,6 +11,7 @@ interface IState {
   loading: boolean;
   users: Client[];
   id: string;
+  searchQuery: string;
 }
 
 export const ClientTable: React.FC = () => {
@@ -20,6 +21,7 @@ export const ClientTable: React.FC = () => {
     loading: false,
     users: [] as Client[],
     id: "",
+    searchQuery: "",
   });
 
   // Pagination start
@@ -55,21 +57,40 @@ export const ClientTable: React.FC = () => {
 
   const { loading, users } = state;
 
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   const totalClient = [...users, ...user];
+
+  const filteredClient = totalClient.filter((client) => {
+    const searchLower = searchQuery.toLowerCase();
+    return client.name.toLowerCase().includes(searchLower);
+  });
+  console.log(filteredClient);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endIndex = startIndex + ITEMS_PER_PAGE - 1;
-  const currentItems = totalClient.slice(startIndex - 1, endIndex);
+  const currentItems = filteredClient.slice(startIndex - 1, endIndex);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
 
   return (
     <KTCardBody className="py-4">
       <div className="container">
         <h1>CLIENT DATA FROM JSON PLACEHOLDER</h1>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={handleSearch}
+        />
         {loading && <ClientListLoading />}
         <table className="table table-striped">
           <thead>
             <tr>
-              <td>ID</td>
+              {/* <td>ID</td> */}
               <td>NAME</td>
               <td>USER NAME</td>
               <td>EMAIL</td>
@@ -77,10 +98,10 @@ export const ClientTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
+            {filteredClient.length > 0 ? (
               currentItems.map((user, index) => (
                 <tr key={index}>
-                  <td>{startIndex + index}</td>
+                  {/* <td>{startIndex + index}</td> */}
                   <td>{user.name}</td>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
